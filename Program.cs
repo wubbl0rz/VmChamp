@@ -44,7 +44,12 @@ rootCommand.SetHandler((complete) =>
 var builder = new CommandLineBuilder(rootCommand).UseDefaults();
 var app = builder.Build();
 
-if (args[0] == "[complete]")
+if (args.Length == 0)
+{
+  return await app.InvokeAsync("--help");
+}
+
+if (args.Length > 1 && args[0] == "[complete]")
 {
   var parseResult = app.Parse(args[1]);
 
@@ -66,16 +71,5 @@ if (args[0] == "[complete]")
 
   return 0;
 }
-
-// var wrongTokens = parseResult.Tokens
-//   .Where(token => token.Type == TokenType.Argument && token.Value.StartsWith("-"))
-//   .ToArray();
-//
-// if (wrongTokens.Any())
-// {
-//   var tokens = string.Join(",", wrongTokens.Select(token => token.Value));
-//   AnsiConsole.MarkupLine($"[red]Option not found: {tokens}[/]");
-//   return await app.InvokeAsync("--help");
-// }
 
 return await app.InvokeAsync(args);

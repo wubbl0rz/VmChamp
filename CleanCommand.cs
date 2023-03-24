@@ -14,6 +14,11 @@ public class CleanCommand : Command
     
     this.SetHandler(() =>
     {
+      if (allVmDirectories.Length == 0)
+      {
+        AnsiConsole.MarkupLine("[green]👀 No VMs found to delete.[/]");
+      }
+      
       AnsiConsole.MarkupLine($"[red]Going to delete all VMs ({allVmDirectories.Length}) and IMAGES[/]");
     
       if (AnsiConsole.Ask<string>("Continue? (y/N)", "N").ToLower() != "y")
