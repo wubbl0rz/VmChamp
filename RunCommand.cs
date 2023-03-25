@@ -30,6 +30,9 @@ public class RunCommand : Command
       () => appConfig.DefaultVmDistro,
       "The operating system image to use.");
 
+    Option<string?> localImageOption = new("--local-image",
+      "Provide your own local image in .qcow2 format.");
+
     Option<bool> backgroundOption = new("--bg",
       () => false,
       "Create in Background.");
@@ -69,24 +72,27 @@ public class RunCommand : Command
     this.AddOption(memOption);
     this.AddOption(diskOption);
     this.AddOption(backgroundOption);
+    this.AddOption(localImageOption);
 
-    this.SetHandler(async (os, background, vmName, mem, disk) =>
+    this.SetHandler(async (os, background, vmName, mem, disk, localImagePath) =>
       {
-        var distro = this.GetDistro(os);
+        var distro = localImagePath is null ? 
+          this.GetDistro(os) : 
+          DistroInfo.CreateLocal(new FileInfo(localImagePath));
 
         var diskSize = ByteSize.Parse(disk);
         var memSize = ByteSize.Parse(mem);
-
-        AnsiConsole.MarkupLine($"️👉 Creating VM: {vmName}");
-        AnsiConsole.MarkupLine($"💻 Using OS: {os}");
-        AnsiConsole.MarkupLine($"📔 Memory size: {memSize:MiB}");
-        AnsiConsole.MarkupLine($"💽 Disk size: {diskSize:MiB}");
 
         if (distro == null)
         {
           AnsiConsole.WriteLine($"OS: {os} not found.");
           return;
         }
+
+        AnsiConsole.MarkupLine($"️👉 Creating VM: {vmName}");
+        AnsiConsole.MarkupLine($"💻 Using OS: {distro.Name}");
+        AnsiConsole.MarkupLine($"📔 Memory size: {memSize:MiB}");
+        AnsiConsole.MarkupLine($"💽 Disk size: {diskSize:MiB}");
 
         var vmDir = Path.Combine(appConfig.DataDir, vmName);
 
@@ -112,7 +118,8 @@ public class RunCommand : Command
       backgroundOption,
       nameArgument,
       memOption,
-      diskOption);
+      diskOption,
+      localImageOption);
   }
 
   private DistroInfo? GetDistro(string name) =>

@@ -11,11 +11,12 @@ public class OsCommand : Command
     _appConfig = appConfig;
     
     this.AddAlias("images");
-    
+
     this.SetHandler(() =>
     {
       var table = new Table();
       table.AddColumn("OS");
+      table.AddColumn("Distro");
       table.AddColumn("Alias");
       table.AddColumn("Image");
       table.AddColumn("Url");
@@ -23,6 +24,7 @@ public class OsCommand : Command
       foreach (var distro in DistroInfo.Distros)
       {
         table.AddRow(distro.Name, 
+          distro.Family,
           string.Join(", ", distro.Aliases), 
           distro.ImageName,
           distro.Url);

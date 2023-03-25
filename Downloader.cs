@@ -14,18 +14,18 @@ public class Downloader
 
   public async Task<FileInfo> DownloadAsync(DistroInfo distroInfo, bool force = false)
   {
-    var targetFile = new FileInfo(Path.Combine(_cacheDirectory.FullName, distroInfo.ImageName));
-    
+    var targetFile = new FileInfo(Path.Combine(_cacheDirectory.FullName, distroInfo.ImageName + ".qcow2"));
+
     if (targetFile.Exists && !force)
     {
       AnsiConsole.WriteLine($"Using existing image: {distroInfo.ImageName}");
       return targetFile;
     }
-    
+
     var uri = new Uri($"{distroInfo.Url}/{distroInfo.ImageName}");
-    
+
     AnsiConsole.WriteLine($"Download: {uri}");
-    
+
 #pragma warning disable SYSLIB0014
     var webClient = new WebClient();
 #pragma warning restore SYSLIB0014
@@ -36,14 +36,11 @@ public class Downloader
       {
         var task = ctx.AddTask($"progress");
 
-        webClient.DownloadProgressChanged += (_, eventArgs) =>
-        {
-          task.Value = eventArgs.ProgressPercentage;
-        };
+        webClient.DownloadProgressChanged += (_, eventArgs) => { task.Value = eventArgs.ProgressPercentage; };
 
         await webClient.DownloadFileTaskAsync(uri, targetFile.FullName);
       });
-    
+
     return targetFile;
   }
 }
