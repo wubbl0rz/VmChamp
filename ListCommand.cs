@@ -12,6 +12,7 @@ public class ListCommand : Command
 
     var allVmDirectories = Directory.GetDirectories(appConfig.DataDir);
     
+    this.AddAlias("ps");
     this.AddAlias("ls");
     
     this.SetHandler(() =>

@@ -7,10 +7,10 @@ public class Helper
 {
   public static Process? ConnectViaSsh(string user, string ip)
   {
-    ProcessStartInfo s = new ProcessStartInfo("ssh");
-    s.Arguments = $"-o StrictHostKeyChecking=off {user}@{ip}";
+    var startInfo = new ProcessStartInfo("ssh");
+    startInfo.Arguments = $"-o StrictHostKeyChecking=off {user}@{ip}";
 
-    return Process.Start(s);
+    return Process.Start(startInfo);
   }
 
   public static void DeleteExistingDirectory(string directoryPath)
@@ -19,6 +19,17 @@ public class Helper
     {
       Directory.Delete(directoryPath, true);
     }
+  }
+
+  public static void ResizeImage(string file, double size)
+  {
+    var startInfo = new ProcessStartInfo("qemu-img")
+    {
+      Arguments = $"resize {file} {size}",
+      RedirectStandardOutput = true
+    };
+
+    Process.Start(startInfo)?.WaitForExit();
   }
 
   public static string?[] GetAllVmInDirectory(string path) =>

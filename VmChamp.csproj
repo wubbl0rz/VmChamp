@@ -17,6 +17,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="ByteSize" Version="2.1.1" />
     <PackageReference Include="DiscUtils" Version="0.16.13" />
     <PackageReference Include="IDNT.AppBasics.Virtualization.Libvirt" Version="1.0.9" />
     <PackageReference Include="Spectre.Console" Version="0.46.0" />

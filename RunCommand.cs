@@ -1,5 +1,7 @@
 using System.CommandLine;
 using System.CommandLine.Completions;
+using System.Diagnostics;
+using ByteSizeLib;
 using Spectre.Console;
 
 namespace VmChamp;
@@ -16,10 +18,18 @@ public class RunCommand : Command
     _downloader = downloader;
     _imager = new IsoImager();
 
+    Option<string> memOption = new("--mem",
+      () => appConfig.DefaultMemorySize,
+      "How much memory the VM can use.");
+
+    Option<string> diskOption = new("--disk",
+      () => appConfig.DefaultDiskSize,
+      "Disk space available for new VM.");
+
     Option<string> osOption = new("--os",
       () => appConfig.DefaultVmDistro,
       "The operating system image to use.");
-    
+
     Option<bool> backgroundOption = new("--bg",
       () => false,
       "Create in Background.");
@@ -27,24 +37,50 @@ public class RunCommand : Command
     Argument<string> nameArgument = new("name",
       () => appConfig.DefaultVmName,
       "Name of the new VM");
-    
-    osOption.AddCompletions((ctx) => 
+
+    osOption.AddCompletions((ctx) =>
       DistroInfo.Distros.Select(distro => new CompletionItem(distro.Name)));
-    
-    osOption.AddCompletions((ctx) => 
+
+    osOption.AddCompletions((ctx) =>
       DistroInfo.Distros.Select(distro => new CompletionItem(distro.Name.ToLower())));
+
+    memOption.AddCompletions((ctx) =>
+      new[]
+      {
+        new CompletionItem("256MB"),
+        new CompletionItem("384MB"),
+        new CompletionItem("512MB"),
+        new CompletionItem("1024MB"),
+        new CompletionItem("2048MB"),
+      });
+
+    diskOption.AddCompletions((ctx) =>
+      new[]
+      {
+        new CompletionItem("4GB"),
+        new CompletionItem("8GB"),
+        new CompletionItem("16GB"),
+        new CompletionItem("32GB"),
+      });
 
     this.AddAlias("start");
     this.AddArgument(nameArgument);
     this.AddOption(osOption);
+    this.AddOption(memOption);
+    this.AddOption(diskOption);
     this.AddOption(backgroundOption);
 
-    this.SetHandler(async (os, background, vmName) =>
+    this.SetHandler(async (os, background, vmName, mem, disk) =>
       {
         var distro = this.GetDistro(os);
-        
-        AnsiConsole.MarkupLine($"Creating VM: {vmName}");
-        AnsiConsole.MarkupLine($"Using OS: {os}");
+
+        var diskSize = ByteSize.Parse(disk);
+        var memSize = ByteSize.Parse(mem);
+
+        AnsiConsole.MarkupLine($"️👉 Creating VM: {vmName}");
+        AnsiConsole.MarkupLine($"💻 Using OS: {os}");
+        AnsiConsole.MarkupLine($"📔 Memory size: {memSize:MiB}");
+        AnsiConsole.MarkupLine($"💽 Disk size: {diskSize:MiB}");
 
         if (distro == null)
         {
@@ -65,25 +101,29 @@ public class RunCommand : Command
         var sourceOsImage = await this._downloader.DownloadAsync(distro);
         var targetOsImage = Path.Combine(vmDir, sourceOsImage.Name);
         sourceOsImage.CopyTo(targetOsImage);
-        
+
+        Helper.ResizeImage(targetOsImage, diskSize.Bytes);
+
         var initImage = _imager.CreateImage(vmName, new DirectoryInfo(vmDir));
 
-        await this.CreateVm(vmName, new FileInfo(targetOsImage), initImage, background);
+        await this.CreateVm(vmName, new FileInfo(targetOsImage), initImage, background, memSize.Bytes);
       },
       osOption,
       backgroundOption,
-      nameArgument);
+      nameArgument,
+      memOption,
+      diskOption);
   }
 
   private DistroInfo? GetDistro(string name) =>
     DistroInfo.Distros
       .FirstOrDefault(distro => distro.Name.ToLower() == name.ToLower());
 
-  private async Task CreateVm(string vmName, FileInfo osImage, FileInfo initImage, bool background)
+  private async Task CreateVm(string vmName, FileInfo osImage, FileInfo initImage, bool background, double memSize)
   {
     using var libvirtConnection = LibvirtConnection.Create("qemu:///session");
 
-    var xml = this.GenXml(vmName, osImage.FullName, initImage.FullName);
+    var xml = this.GenXml(vmName, osImage.FullName, initImage.FullName, memSize);
 
     var vmId = Interop.virDomainCreateXML(libvirtConnection.NativePtr, xml, 0);
     
@@ -100,7 +140,7 @@ public class RunCommand : Command
       {
         ctx.AddTask($"Waiting for network...");
 
-        var src = new CancellationTokenSource(TimeSpan.FromSeconds(30));
+        var src = new CancellationTokenSource(TimeSpan.FromSeconds(45));
       
         do
         {
@@ -122,7 +162,7 @@ public class RunCommand : Command
     Helper.ConnectViaSsh(_appConfig.DefaultUser, vmIp)?.WaitForExit();
   }
 
-  private string GenXml(string vmName, string diskImage, string initImage)
+  private string GenXml(string vmName, string diskImage, string initImage, double memSizeInBytes)
   {
     var guid = Guid.NewGuid();
     var xml = $"""
@@ -134,7 +174,7 @@ public class RunCommand : Command
             <libosinfo:os id="http://libosinfo.org/linux/2020"/>
           </libosinfo:libosinfo>
         </metadata>
-        <memory unit="KiB">262144</memory>
+        <memory unit="B">{memSizeInBytes}</memory>
         <vcpu placement="static">1</vcpu>
         <os>
           <type arch="x86_64" machine="pc-q35-7.2">hvm</type>
@@ -165,6 +205,9 @@ public class RunCommand : Command
             <alias name="virtio-disk1"/>
             <address type="pci" domain="0x0000" bus="0x05" slot="0x00" function="0x0"/>
           </disk>
+          <console type='pty'>
+            <target type='serial' port='0'/>
+          </console>
           <interface type="bridge">
             <source bridge="virbr0"/>
             <model type="virtio"/>

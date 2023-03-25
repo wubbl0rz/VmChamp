@@ -6,6 +6,8 @@ public class AppConfig
   public string DefaultVmName { get; set; } = "testvm";
   public string DefaultVmDistro { get; set; } = "Debian11";
   public string DefaultUser { get; set; } = "user";
+  public string DefaultMemorySize { get; set; } = "256MB";
+  public string DefaultDiskSize { get; set; } = "4GB";
 
   public AppConfig(string appName = "VmChamp", string sessionName = "default")
   {

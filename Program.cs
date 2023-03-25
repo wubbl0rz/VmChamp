@@ -19,6 +19,7 @@ rootCommand.AddCommand(new RemoveCommand(appConfig));
 rootCommand.AddCommand(new SshCommand(appConfig));
 rootCommand.AddCommand(new ListCommand(appConfig));
 rootCommand.AddCommand(new OsCommand(appConfig));
+rootCommand.AddCommand(new KekwCommand());
 
 var completionOption = new Option<string?>("--completion", "generate shell completion. (zsh or bash)");
 rootCommand.AddOption(completionOption);
