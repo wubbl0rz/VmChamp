@@ -32,3 +32,23 @@ For shell completion put this in your ~.zshrc:
 ```
 source <(VmChamp --completion zsh)
 ```
+
+```
+Description:
+
+Usage:
+  VmChamp [command] [options]
+
+Options:
+  --completion <completion>  generate shell completion. (zsh or bash)
+  --version                  Show version information
+  -?, -h, --help             Show help and usage information
+
+Commands:
+  run, start <name>  start a new VM [default: testvm]
+  clean              delete all vms and images
+  remove, rm <name>  removes a vm [default: testvm]
+  ssh <name>         connect to vm via ssh [default: testvm]
+  list, ls, ps       list all existing vms
+  images, os         get a list of all available os images
+```
