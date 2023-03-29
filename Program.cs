@@ -16,6 +16,7 @@ var rootCommand = new RootCommand();
 rootCommand.AddCommand(new RunCommand(appConfig, downloader));
 rootCommand.AddCommand(new CleanCommand(appConfig));
 rootCommand.AddCommand(new RemoveCommand(appConfig));
+rootCommand.AddCommand(new RestartCommand(appConfig));
 rootCommand.AddCommand(new SshCommand(appConfig));
 rootCommand.AddCommand(new ListCommand(appConfig));
 rootCommand.AddCommand(new OsCommand(appConfig));

@@ -3,38 +3,38 @@ using System.CommandLine.Completions;
 using Spectre.Console;
 using VmChamp;
 
-public class RemoveCommand : Command
+public class RestartCommand : Command
 {
   private readonly AppConfig _appConfig;
 
-  public RemoveCommand(AppConfig appConfig) : base("remove", "removes a vm")
+  public RestartCommand(AppConfig appConfig) : base("restart", "force restarts a vm")
   {
     _appConfig = appConfig;
-    
+
     Argument<string> nameArgument = new("name",
       () => appConfig.DefaultVmName,
-      "Name of the VM to remove.");
+      "Name of the VM to restart.");
 
-    this.AddAlias("rm");
+    this.AddAlias("reboot");
+    this.AddAlias("reset");
     this.AddArgument(nameArgument);
-    
-    nameArgument.AddCompletions((ctx) => 
+
+    nameArgument.AddCompletions((ctx) =>
       Helper.GetAllVmInDirectory(_appConfig.DataDir)
         .Select(vmName => new CompletionItem(vmName ?? "")));
-    
-    nameArgument.AddCompletions((ctx) => 
+
+    nameArgument.AddCompletions((ctx) =>
       Helper.GetAllVmInDirectory(_appConfig.DataDir)
         .Select(vmName => new CompletionItem(vmName ?? "")));
 
     this.SetHandler((vmName) =>
     {
       using var libvirtConnection = LibvirtConnection.Create("qemu:///session");
-      
+
       var vmId = Interop.virDomainLookupByName(libvirtConnection.NativePtr, vmName);
-      var vmDir = Path.Combine(_appConfig.DataDir, vmName);
-      
-      Interop.DestroyVm(vmId, vmName, vmDir);
-      Helper.DeleteExistingDirectory(vmDir);
+      AnsiConsole.MarkupLine($"[yellow]🔄 Restart VM: {vmName}[/]");
+
+      Interop.virDomainReset(vmId);
     }, nameArgument);
   }
 }

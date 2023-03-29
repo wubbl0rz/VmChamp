@@ -18,26 +18,33 @@ public class RunCommand : Command
     _downloader = downloader;
     _imager = new IsoImager();
 
-    Option<string> memOption = new("--mem",
+    var customCmdOption = new Option<string?>("--cmd",
+      "Execute custom shell command after VM start.");
+
+    var memOption = new Option<string>("--mem",
       () => appConfig.DefaultMemorySize,
       "How much memory the VM can use.");
 
-    Option<string> diskOption = new("--disk",
+    var diskOption = new Option<string>("--disk",
       () => appConfig.DefaultDiskSize,
       "Disk space available for new VM.");
 
-    Option<string> osOption = new("--os",
+    var osOption = new Option<string>("--os",
       () => appConfig.DefaultVmDistro,
       "The operating system image to use.");
 
-    Option<string?> localImageOption = new("--local-image",
+    var localImageOption = new Option<string?>("--local-image",
       "Provide your own local image in .qcow2 format.");
 
-    Option<bool> backgroundOption = new("--bg",
+    var backgroundOption = new Option<bool>("--bg",
       () => false,
       "Create in Background.");
 
-    Argument<string> nameArgument = new("name",
+    var cpuOption = new Option<int>("--cpu",
+      () => appConfig.DefaultCpuCount,
+      "Number of virtual CPUs.");
+
+    var nameArgument = new Argument<string>("name",
       () => appConfig.DefaultVmName,
       "Name of the new VM");
 
@@ -50,20 +57,31 @@ public class RunCommand : Command
     memOption.AddCompletions((ctx) =>
       new[]
       {
-        new CompletionItem("256MB"),
-        new CompletionItem("384MB"),
-        new CompletionItem("512MB"),
-        new CompletionItem("1024MB"),
-        new CompletionItem("2048MB"),
+        new CompletionItem("256MiB"),
+        new CompletionItem("384MiB"),
+        new CompletionItem("512MiB"),
+        new CompletionItem("1024MiB"),
+        new CompletionItem("2048MiB"),
       });
 
     diskOption.AddCompletions((ctx) =>
       new[]
       {
-        new CompletionItem("4GB"),
-        new CompletionItem("8GB"),
-        new CompletionItem("16GB"),
-        new CompletionItem("32GB"),
+        new CompletionItem("4GiB"),
+        new CompletionItem("8GiB"),
+        new CompletionItem("16GiB"),
+        new CompletionItem("32GiB"),
+      });
+
+    cpuOption.AddCompletions((ctx) =>
+      new[]
+      {
+        new CompletionItem("1"),
+        new CompletionItem("2"),
+        new CompletionItem("3"),
+        new CompletionItem("4"),
+        new CompletionItem("5"),
+        new CompletionItem("6"),
       });
 
     this.AddAlias("start");
@@ -71,10 +89,19 @@ public class RunCommand : Command
     this.AddOption(osOption);
     this.AddOption(memOption);
     this.AddOption(diskOption);
+    this.AddOption(cpuOption);
     this.AddOption(backgroundOption);
     this.AddOption(localImageOption);
+    this.AddOption(customCmdOption);
 
-    this.SetHandler(async (os, background, vmName, mem, disk, localImagePath) =>
+    this.SetHandler(async (os,
+        background,
+        vmName,
+        mem,
+        disk,
+        cpuCount,
+        localImagePath,
+        customCmd) =>
       {
         var distro = localImagePath is null ? 
           this.GetDistro(os) : 
@@ -92,14 +119,20 @@ public class RunCommand : Command
         AnsiConsole.MarkupLine($"️👉 Creating VM: {vmName}");
         AnsiConsole.MarkupLine($"💻 Using OS: {distro.Name}");
         AnsiConsole.MarkupLine($"📔 Memory size: {memSize:MiB}");
-        AnsiConsole.MarkupLine($"💽 Disk size: {diskSize:MiB}");
+        AnsiConsole.MarkupLine($"💽 Disk size: {diskSize:GiB}");
 
         var vmDir = Path.Combine(appConfig.DataDir, vmName);
 
         if (Directory.Exists(vmDir))
         {
-          AnsiConsole.MarkupLine($"[red]VM: {vmName} already exists. Do you want to recreate it now?[/]");
-          return;
+          AnsiConsole.MarkupLine($"[red]VM: {vmName} already exists. Do you want to delete and recreate it now?[/]");
+
+          if (AnsiConsole.Ask<string>("Continue? (y/N)", "N").ToLower() != "y")
+          {
+            return;
+          }
+
+          this.RemoveVm(vmName, vmDir);
         }
 
         Directory.CreateDirectory(vmDir);
@@ -110,27 +143,34 @@ public class RunCommand : Command
 
         Helper.ResizeImage(targetOsImage, diskSize.Bytes);
 
-        var initImage = _imager.CreateImage(vmName, new DirectoryInfo(vmDir));
+        var initImage = _imager.CreateImage(vmName, new DirectoryInfo(vmDir), customCmd ?? "");
 
-        await this.CreateVm(vmName, new FileInfo(targetOsImage), initImage, background, memSize.Bytes);
+        await this.CreateVm(vmName, new FileInfo(targetOsImage), initImage, background, memSize.Bytes, cpuCount);
       },
       osOption,
       backgroundOption,
       nameArgument,
       memOption,
       diskOption,
-      localImageOption);
+      cpuOption,
+      localImageOption,
+      customCmdOption);
   }
 
   private DistroInfo? GetDistro(string name) =>
     DistroInfo.Distros
       .FirstOrDefault(distro => distro.Name.ToLower() == name.ToLower());
 
-  private async Task CreateVm(string vmName, FileInfo osImage, FileInfo initImage, bool background, double memSize)
+  private async Task CreateVm(string vmName,
+    FileInfo osImage,
+    FileInfo initImage,
+    bool background,
+    double memSize,
+    int cpuCount)
   {
     using var libvirtConnection = LibvirtConnection.Create("qemu:///session");
 
-    var xml = this.GenXml(vmName, osImage.FullName, initImage.FullName, memSize);
+    var xml = this.GenXml(vmName, osImage.FullName, initImage.FullName, memSize, cpuCount);
 
     var vmId = Interop.virDomainCreateXML(libvirtConnection.NativePtr, xml, 0);
     
@@ -169,7 +209,16 @@ public class RunCommand : Command
     Helper.ConnectViaSsh(_appConfig.DefaultUser, vmIp)?.WaitForExit();
   }
 
-  private string GenXml(string vmName, string diskImage, string initImage, double memSizeInBytes)
+  private void RemoveVm(string vmName, string vmDir)
+  {
+    using var libvirtConnection = LibvirtConnection.Create("qemu:///session");
+
+    var vmId = Interop.virDomainLookupByName(libvirtConnection.NativePtr, vmName);
+
+    Interop.DestroyVm(vmId, vmName, vmDir);
+  }
+
+  private string GenXml(string vmName, string diskImage, string initImage, double memSizeInBytes, int cpuCount)
   {
     var guid = Guid.NewGuid();
     var xml = $"""
@@ -182,7 +231,7 @@ public class RunCommand : Command
           </libosinfo:libosinfo>
         </metadata>
         <memory unit="B">{memSizeInBytes}</memory>
-        <vcpu placement="static">1</vcpu>
+        <vcpu placement="static">{cpuCount}</vcpu>
         <os>
           <type arch="x86_64" machine="pc-q35-7.2">hvm</type>
           <boot dev="hd"/>
@@ -204,6 +253,9 @@ public class RunCommand : Command
             <target dev="vda" bus="virtio"/>
             <address type="pci" domain="0x0000" bus="0x04" slot="0x00" function="0x0"/>
           </disk>
+          <channel type='unix'>
+             <target type='virtio' name='org.qemu.guest_agent.0'/>
+          </channel>
           <disk type="file" device="disk">
             <driver name="qemu" type="raw"/>
             <source file="{initImage}" index="1"/>

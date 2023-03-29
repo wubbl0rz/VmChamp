@@ -51,6 +51,54 @@ public class DistroInfo
       ImageName = "focal-server-cloudimg-amd64.img",
       Url = "https://cloud-images.ubuntu.com/jammy/current/",
       Aliases = new[] { "Jammy Jellyfish", "Jammy" }
+    },
+    new()
+    {
+      Name = "Arch",
+      Family = "Arch",
+      ImageName = "Arch-Linux-x86_64-cloudimg.qcow2",
+      Url = "https://geo.mirror.pkgbuild.com/images/latest/",
+      Aliases = Array.Empty<string>()
+    },
+    new()
+    {
+      Name = "Fedora36",
+      Family = "Fedora",
+      ImageName = "Fedora-Cloud-Base-36-1.5.x86_64.qcow2",
+      Url = "https://download.fedoraproject.org/pub/fedora/linux/releases/37/Cloud/x86_64/images/",
+      Aliases = Array.Empty<string>()
+    },
+    new()
+    {
+      Name = "Fedora37",
+      Family = "Fedora",
+      ImageName = "Fedora-Cloud-Base-37-1.7.x86_64.qcow2",
+      Url = "https://download.fedoraproject.org/pub/fedora/linux/releases/37/Cloud/x86_64/images/",
+      Aliases = Array.Empty<string>()
+    },
+    new()
+    {
+      Name = "CentOS7",
+      Family = "RHEL",
+      ImageName = "CentOS-7-x86_64-GenericCloud.qcow2",
+      Url = "https://cloud.centos.org/centos/7/images/",
+      Aliases = Array.Empty<string>()
+    },
+    new()
+    {
+      Name = "Alma8",
+      Family = "RHEL",
+      ImageName = "AlmaLinux-8-GenericCloud-latest.x86_64.qcow2",
+      Url = "https://repo.almalinux.org/almalinux/8/cloud/x86_64/images/",
+      Aliases = Array.Empty<string>()
+    },
+    new()
+    {
+      Name = "Alma9",
+      Family = "RHEL",
+      ImageName = "AlmaLinux-8-GenericCloud-latest.x86_64.qcow2",
+      Url = "https://repo.almalinux.org/almalinux/8/cloud/x86_64/images/",
+      Aliases = Array.Empty<string>()
     }
   };
 

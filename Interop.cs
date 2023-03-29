@@ -20,6 +20,36 @@ public unsafe struct VirDomainInterface
   public VirDomainIpAddress* addrs;
 }
 
+[StructLayout(LayoutKind.Sequential)]
+public struct VirDomainInfo
+{
+  public byte state;
+  public long maxMem;
+  public long memory;
+  public ushort nrVirtCpu;
+  public ulong cpuTime;
+}
+
+public struct VirDomainBlockInfo
+{
+  public ulong capacity;
+  public ulong allocation;
+  public ulong physical;
+}
+
+enum VirDomainState
+{
+  NoState = 0,
+  Running = 1,
+  Blocked = 2,
+  Paused = 3,
+  Shutdown = 4,
+  Shutoff = 5,
+  Crashed = 6,
+  Suspended = 7,
+  Last = 8
+}
+
 public static unsafe class Interop
 {
   [DllImport("libvirt.so.0",
@@ -51,11 +81,26 @@ public static unsafe class Interop
     CallingConvention = CallingConvention.Cdecl,
     EntryPoint = "virDomainLookupByName")]
   public static extern nint virDomainLookupByName(nint conn, string name);
-  
+
   [DllImport("libvirt.so.0",
     CallingConvention = CallingConvention.Cdecl,
     EntryPoint = "virDomainDestroy")]
   public static extern int virDomainDestroy(nint domain);
+
+  [DllImport("libvirt.so.0",
+    CallingConvention = CallingConvention.Cdecl,
+    EntryPoint = "virDomainGetInfo")]
+  public static extern int virDomainGetInfo(nint domain, VirDomainInfo* info);
+
+  [DllImport("libvirt.so.0",
+    CallingConvention = CallingConvention.Cdecl,
+    EntryPoint = "virDomainGetBlockInfo")]
+  public static extern int virDomainGetBlockInfo(nint domain, string disk, VirDomainBlockInfo* info, uint flags = 0);
+
+  [DllImport("libvirt.so.0",
+    CallingConvention = CallingConvention.Cdecl,
+    EntryPoint = "virDomainReset")]
+  public static extern int virDomainReset(nint domain, uint flags = 0);
 
   public static string? GetFirstIpById(nint id)
   {

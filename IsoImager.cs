@@ -19,7 +19,7 @@ public class IsoImager
     return keys;
   }
 
-  public FileInfo CreateImage(string hostname, DirectoryInfo outputDirectory)
+  public FileInfo CreateImage(string hostname, DirectoryInfo outputDirectory, string customCmd = "")
   {
     var keys = "[" + string.Join(",", this.FindSshKeys().Select(key => $"\"{key.Trim()}\"")) + "]";
 
@@ -49,6 +49,7 @@ public class IsoImager
       runcmd:
         - systemctl stop networking && systemctl start networking
         - systemctl disable cloud-init.service
+        - echo; {customCmd}
 
       --==BOUNDARY==--
       """;

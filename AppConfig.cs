@@ -1,3 +1,5 @@
+namespace VmChamp;
+
 public class AppConfig
 {
   public string AppDir { get; private set; }
@@ -6,8 +8,9 @@ public class AppConfig
   public string DefaultVmName { get; set; } = "testvm";
   public string DefaultVmDistro { get; set; } = "Debian11";
   public string DefaultUser { get; set; } = "user";
-  public string DefaultMemorySize { get; set; } = "256MB";
-  public string DefaultDiskSize { get; set; } = "4GB";
+  public string DefaultMemorySize { get; set; } = "256MiB";
+  public string DefaultDiskSize { get; set; } = "4GiB";
+  public int DefaultCpuCount { get; set; } = 1;
 
   public AppConfig(string appName = "VmChamp", string sessionName = "default")
   {
