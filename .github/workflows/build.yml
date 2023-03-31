@@ -1,0 +1,62 @@
+name: build
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+    - name: checkout_repo
+      uses: actions/checkout@v3
+    - name: install_buildx
+      uses: docker/setup-buildx-action@v2
+    - name: build_release
+      run: |
+        TARGET_VERSION="$(echo ${{ github.ref_name }} | cut -c 2-)"
+        export ACTIONS_CACHE_URL=$(echo "$ACTIONS_ID_TOKEN_REQUEST_URL" | grep -Po 'https://[^/]+/[^/]+/' | sed  's/pipelines/artifactcache/')
+        export ACTIONS_RUNTIME_TOKEN=$ACTIONS_ID_TOKEN_REQUEST_TOKEN
+
+        docker buildx build --build-arg TARGET_VERSION="$TARGET_VERSION" --cache-to "type=gha,mode=max,scope=build" --cache-from "type=gha,scope=build" . \
+          --target=output --output type=local,dest=/tmp/out/
+    - name: upload_binary
+      uses: actions/upload-artifact@v3.1.2
+      with:
+        name: "VmChamp-linux-${{ github.ref_name }}-amd64"
+        path: /tmp/out/VmChamp
+        retention-days: 1
+  aur:
+    needs: build
+    runs-on: ubuntu-22.04
+    container: archlinux:base-devel
+    steps:
+    - uses: actions/download-artifact@v3
+      with:
+        name: "VmChamp-linux-${{ github.ref_name }}-amd64"
+    - name: makepkg
+      run: |
+        pacman -Sy
+        pacman --noconfirm -S git sudo openssh
+        cd /tmp/
+
+        eval $(ssh-agent -s)
+        ssh-add - <<<$(echo "${{ secrets.AUR_KEY }}")
+        export GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+        git clone ssh://aur@aur.archlinux.org/vmchamp-bin.git
+        git config --global user.email ""
+        git config --global user.name "${{ github.repository_owner }}"
+
+        cd vmchamp-bin
+        sed -i s/pkgver=.*/pkgver=${{ github.ref_name }}/g PKGBUILD
+        useradd build
+        chown -R build:build /tmp/vmchamp-bin
+        sudo -u build makepkg --force --printsrcinfo > .SRCINFO
+        chown -R root:root /tmp/vmchamp-bin
+        git commit -a -m "update ${{ github.ref_name }}"
+        git log -1 -p
