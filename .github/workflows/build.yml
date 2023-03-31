@@ -1,1 +1,18 @@
 name: build
+
+on:
+  push:
+    tags:
+      - 'v*'
+      
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+    - name: checkout_repo
+      uses: actions/checkout@v3
+    - name: kekl
+      run: |
+        ls -la /
+        echo 123
+        echo AYAYA CUTECHAT PRIME SUB
