@@ -44,8 +44,6 @@ source <(VmChamp --completion zsh)
 ```
 
 ```
-Description:
-
 Usage:
   VmChamp [command] [options]
 
@@ -55,10 +53,11 @@ Options:
   -?, -h, --help             Show help and usage information
 
 Commands:
-  run, start <name>  start a new VM [default: testvm]
-  clean              delete all vms and images
-  remove, rm <name>  removes a vm [default: testvm]
-  ssh <name>         connect to vm via ssh [default: testvm]
-  list, ls, ps       list all existing vms
-  images, os         get a list of all available os images
+  run, start <name>              start a new VM [default: testvm]
+  clean                          delete all vms and images
+  remove, rm <name>              removes a vm [default: testvm]
+  reboot, reset, restart <name>  force restarts a vm [default: testvm]
+  ssh <name>                     connect to vm via ssh [default: testvm]
+  list, ls, ps                   list all existing vms
+  images, os                     get a list of all available os images
 ```
