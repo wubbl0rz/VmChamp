@@ -15,7 +15,7 @@
 - Create throwaway VMs on your local machine and connect via SSH in just a few seconds.
 - Fast and easy to use.
 - Fast boot times because by default uses minimal cloud images.
-- On demand download of latest Debian and Ubuntu cloud images.
+- On demand download of latest Debian, Ubuntu, Arch, Fedora, CentOS and Alma cloud images.
 - Shell completion.
 - Customizable cloud-init commands if needed.
 - Uses KVM, QEMU and libvirt.
