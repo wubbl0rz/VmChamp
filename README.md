@@ -26,7 +26,7 @@ Sometimes Docker containers are not sufficient for all use cases. For example wh
 
 ## 🔧 Prerequisites
 
-Your local linux machine needs to support virtualisation and KVM must be installed and working.
+Your local linux machine needs to support virtualization and KVM must be installed and working.
 
 ## 🚀 Usage
 
