@@ -1,4 +1,4 @@
-FROM centos:7 AS build-env
+FROM centos:7 AS build
 WORKDIR /App
 
 RUN ulimit -n 1024 && yum -y update 
@@ -9,4 +9,8 @@ COPY *.cs ./
 COPY *.csproj ./
 ARG DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1
 ARG TARGET_VERSION
-RUN ~/.dotnet/dotnet publish -r linux-x64 --configuration Release /p:Version=$TARGET_VERSION --self-contained=true /p:PublishAot=true /p:StripSymbols=true -o build
+RUN ~/.dotnet/dotnet publish -r linux-x64 --configuration Release -p:Version=$TARGET_VERSION --self-contained=true -p:PublishAot=true -p:StripSymbols=true -o build
+
+FROM scratch as output
+COPY --from=build /App/build/VmChamp /VmChamp
+
