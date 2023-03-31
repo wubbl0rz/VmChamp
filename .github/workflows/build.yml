@@ -1,10 +1,11 @@
 name: build
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - 'v*'
-      
+
 jobs:
   build:
     runs-on: ubuntu-22.04
@@ -13,6 +14,6 @@ jobs:
       uses: actions/checkout@v3
     - name: kekl
       run: |
-        ls -la /
-        echo 123
-        echo AYAYA CUTECHAT PRIME SUB
+        apt install -y neofetch
+        neofetch
+        
