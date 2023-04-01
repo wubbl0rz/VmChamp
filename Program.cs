@@ -37,6 +37,7 @@ rootCommand.SetHandler((complete) =>
     }
 
     compdef _VmChamp_zsh_complete VmChamp
+    compdef _VmChamp_zsh_complete vmchamp
     """;
 
     AnsiConsole.WriteLine(zsh);
