@@ -60,3 +60,4 @@ jobs:
         chown -R root:root /tmp/vmchamp-bin
         git commit -a -m "update ${{ github.ref_name }}"
         git log -1 -p
+        git push origin master
