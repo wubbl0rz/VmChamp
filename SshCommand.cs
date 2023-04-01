@@ -27,7 +27,7 @@ public class SshCommand : Command
     
     this.SetHandler((vmName) =>
     {
-      Console.WriteLine(vmName);
+      AnsiConsole.MarkupLine($"✈️ Connect to: {vmName}");
       using var libvirtConnection = LibvirtConnection.Create("qemu:///session");
       
       var vmId = Interop.virDomainLookupByName(libvirtConnection.NativePtr, vmName);
