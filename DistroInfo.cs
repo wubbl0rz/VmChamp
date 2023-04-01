@@ -48,9 +48,17 @@ public class DistroInfo
     {
       Name = "Ubuntu2204",
       Family = "Ubuntu",
-      ImageName = "focal-server-cloudimg-amd64.img",
+      ImageName = "jammy-server-cloudimg-amd64.img",
       Url = "https://cloud-images.ubuntu.com/jammy/current/",
       Aliases = new[] { "Jammy Jellyfish", "Jammy" }
+    },
+    new()
+    {
+      Name = "Ubuntu2304",
+      Family = "Ubuntu",
+      ImageName = "lunar-server-cloudimg-amd64.img",
+      Url = "https://cloud-images.ubuntu.com/lunar/current/",
+      Aliases = new[] { "Lunar Lobster", "Lunar" }
     },
     new()
     {
@@ -65,7 +73,7 @@ public class DistroInfo
       Name = "Fedora36",
       Family = "Fedora",
       ImageName = "Fedora-Cloud-Base-36-1.5.x86_64.qcow2",
-      Url = "https://download.fedoraproject.org/pub/fedora/linux/releases/37/Cloud/x86_64/images/",
+      Url = "https://download.fedoraproject.org/pub/fedora/linux/releases/36/Cloud/x86_64/images/",
       Aliases = Array.Empty<string>()
     },
     new()
@@ -82,6 +90,22 @@ public class DistroInfo
       Family = "RHEL",
       ImageName = "CentOS-7-x86_64-GenericCloud.qcow2",
       Url = "https://cloud.centos.org/centos/7/images/",
+      Aliases = Array.Empty<string>()
+    },
+    new()
+    {
+      Name = "Rocky8",
+      Family = "RHEL",
+      ImageName = "Rocky-8-GenericCloud.latest.x86_64.qcow2",
+      Url = "https://download.rockylinux.org/pub/rocky/8/images/x86_64/",
+      Aliases = Array.Empty<string>()
+    },
+    new()
+    {
+      Name = "Rocky9",
+      Family = "RHEL",
+      ImageName = "Rocky-9-GenericCloud.latest.x86_64.qcow2",
+      Url = "https://download.rockylinux.org/pub/rocky/9/images/x86_64/",
       Aliases = Array.Empty<string>()
     },
     new()
