@@ -36,7 +36,7 @@ jobs:
       uses: softprops/action-gh-release@v1
       with:
         body: |
-          fixes
+          ${{ github.event.head_commit.message }}
         files: /tmp/out/VmChamp-linux-${{ github.ref_name }}-amd64
   aur:
     needs: build
