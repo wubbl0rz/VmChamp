@@ -22,14 +22,6 @@ public class DistroInfo
     },
     new()
     {
-      Name = "Debian9",
-      Family = "Debian",
-      ImageName = "debian-9-genericcloud-amd64.qcow2",
-      Url = "https://cloud.debian.org/images/cloud/stretch/latest/",
-      Aliases = new[] { "Stretch" }
-    },
-    new()
-    {
       Name = "Ubuntu1804",
       Family = "Ubuntu",
       ImageName = "bionic-server-cloudimg-amd64.img",
