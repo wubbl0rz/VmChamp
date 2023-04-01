@@ -14,7 +14,7 @@ public class Downloader
 
   public async Task<FileInfo> DownloadAsync(DistroInfo distroInfo, bool force = false)
   {
-    var targetFile = new FileInfo(Path.Combine(_cacheDirectory.FullName, distroInfo.ImageName + ".qcow2"));
+    var targetFile = new FileInfo(Path.Combine(_cacheDirectory.FullName, distroInfo.ImageName));
 
     if (targetFile.Exists && !force)
     {
@@ -22,7 +22,7 @@ public class Downloader
       return targetFile;
     }
 
-    var uri = new Uri($"{distroInfo.Url}/{distroInfo.ImageName}");
+    var uri = new Uri(new Uri(distroInfo.Url), distroInfo.ImageName);
 
     AnsiConsole.WriteLine($"Download: {uri}");
 
