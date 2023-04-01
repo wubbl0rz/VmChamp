@@ -61,3 +61,19 @@ Commands:
   list, ls, ps                   list all existing vms
   images, os                     get a list of all available os images
 ```
+
+## 🏗️ Build
+
+Simply use the included bash script as follows:
+
+```bash
+./build <version> <output dir>
+```
+
+For example:
+
+```bash
+./build 1.2.3 ~/build/
+```
+
+Output dir defaults to `./build/`.
