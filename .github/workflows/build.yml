@@ -7,7 +7,7 @@ on:
 
 permissions:
   id-token: write
-  contents: read
+  contents: write
 
 jobs:
   build:
@@ -25,12 +25,19 @@ jobs:
 
         docker buildx build --build-arg TARGET_VERSION="$TARGET_VERSION" --cache-to "type=gha,mode=max,scope=build" --cache-from "type=gha,scope=build" . \
           --target=output --output type=local,dest=/tmp/out/
+        cp /tmp/out/VmChamp /tmp/out/VmChamp-linux-${{ github.ref_name }}-amd64
     - name: upload_binary
       uses: actions/upload-artifact@v3.1.2
       with:
         name: "VmChamp-linux-${{ github.ref_name }}-amd64"
         path: /tmp/out/VmChamp
         retention-days: 1
+    - name: Release
+      uses: softprops/action-gh-release@v1
+      with:
+        body: |
+          fixes
+        files: /tmp/out/VmChamp-linux-${{ github.ref_name }}-amd64
   aur:
     needs: build
     runs-on: ubuntu-22.04
