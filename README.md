@@ -1,5 +1,5 @@
 <div align="center" width="100%">
-    <img src="https://raw.githubusercontent.com/Minecodes/VmChamp/master/VMChamp.png" width="150" />
+    <img src="https://raw.githubusercontent.com/wubbl0rz/VmChamp/master/VMChamp.png" width="150" />
 </div>
 
 <div align="center" width="100%">
