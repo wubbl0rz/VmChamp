@@ -26,8 +26,8 @@ OUTPUT_DIR_REALPATH=$(realpath "$OUTPUT_DIR")
 # build image
 echo -e "${BOLD_BLUE}ℹ️ Build version: ${TARGET_VERSION}${NC}"
 echo -e "${BOLD_BLUE}ℹ️ Output dir: ${OUTPUT_DIR_REALPATH}/${NC}"
-
 echo ""
+
 echo -ne "${BLUE}🏗️ Docker build image...${NC}"
 docker build --build-arg TARGET_VERSION="$TARGET_VERSION" -t vmchamp:latest -q . > /dev/null
 echo -e "${GREEN} done${NC}"
@@ -37,7 +37,7 @@ docker create --name vmchamp -q vmchamp:latest exit 0 > /dev/null
 echo -e "${GREEN} done${NC}"
 
 echo -ne "${BLUE}🏗️ Docker copy binary...${NC}"
-docker cp -q vmchamp:/VmChamp "$OUTPUT_DIR/VmChamp" > /dev/null
+docker cp -q vmchamp:/App/build/VmChamp "$OUTPUT_DIR/VmChamp" > /dev/null
 echo -e "${GREEN} done${NC}"
 
 echo -ne "${BLUE}🏗️ Docker remove container...${NC}"
