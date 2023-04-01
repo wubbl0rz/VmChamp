@@ -5,7 +5,9 @@
 <div align="center" width="100%">
     <h2>VmChamp</h2>
     <p>Simple and fast creation of throwaway VMs on your local machine. Connect via SSH in just a few seconds.</p>
-    <a target="_blank" href="https://github.com/wubbl0rz/VmChamp"><img src="https://img.shields.io/github/stars/wubbl0rz/VmChamp" /></a>
+    <a target="_blank" href="https://aur.archlinux.org/packages/vmchamp-bin"><img src="https://img.shields.io/aur/version/vmchamp-bin" /></a>
+    <a target="_blank" href="https://github.com/wubbl0rz/VmChamp/actions"><img src="https://img.shields.io/github/actions/workflow/status/wubbl0rz/VmChamp/build.yml" /></a>
+    <a target="_blank" href="https://github.com/wubbl0rz/VmChamp/stargazers"><img src="https://img.shields.io/github/stars/wubbl0rz/VmChamp" /></a>
     <a target="_blank" href="https://github.com/wubbl0rz/VmChamp/releases"><img src="https://img.shields.io/github/v/release/wubbl0rz/VmChamp?display_name=tag" /></a>
     <a target="_blank" href="https://github.com/wubbl0rz/VmChamp/commits/master"><img src="https://img.shields.io/github/last-commit/wubbl0rz/VmChamp" /></a>
 </div>
