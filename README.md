@@ -34,11 +34,10 @@ A default network interface defined in libvirt must be present. Usually it comes
 If your default interface is not started (https://github.com/wubbl0rz/VmChamp/issues/3) try:
 
 ```
+# use sudo if your user is not in the libvirt group
 virsh --connect qemu:///system net-start --network default
 virsh --connect qemu:///system net-autostart default
 ```
-
-If your user is not in the libvirt group you need sudo for the commands.
 
 ## 🚀 Usage
 
