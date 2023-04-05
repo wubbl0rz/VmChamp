@@ -14,3 +14,5 @@ RUN ~/.dotnet/dotnet publish -r linux-x64 --configuration Release -p:Version=$TA
 FROM scratch as output
 COPY --from=build /App/build/VmChamp /VmChamp
 
+FROM build as release
+
