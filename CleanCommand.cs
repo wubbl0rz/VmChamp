@@ -26,7 +26,7 @@ public class CleanCommand : Command
         return;
       }
     
-      using var libvirtConnection = LibvirtConnection.Create("qemu:///session");
+      using var libvirtConnection = LibvirtConnection.CreateForSession();
     
       foreach (var vmDir in allVmDirectories)
       {

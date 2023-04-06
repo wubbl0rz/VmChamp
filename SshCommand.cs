@@ -1,7 +1,8 @@
 using System.CommandLine;
 using System.CommandLine.Completions;
 using Spectre.Console;
-using VmChamp;
+
+namespace VmChamp;
 
 public class SshCommand : Command
 {
@@ -28,7 +29,7 @@ public class SshCommand : Command
     this.SetHandler((vmName) =>
     {
       AnsiConsole.MarkupLine($"✈️ Connect to: {vmName}");
-      using var libvirtConnection = LibvirtConnection.Create("qemu:///session");
+      using var libvirtConnection = LibvirtConnection.CreateForSession();
       
       var vmId = Interop.virDomainLookupByName(libvirtConnection.NativePtr, vmName);
       var vmIp = Interop.GetFirstIpById(vmId);

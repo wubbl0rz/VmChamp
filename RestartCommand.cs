@@ -29,7 +29,7 @@ public class RestartCommand : Command
 
     this.SetHandler((vmName) =>
     {
-      using var libvirtConnection = LibvirtConnection.Create("qemu:///session");
+      using var libvirtConnection = LibvirtConnection.CreateForSession();
 
       var vmId = Interop.virDomainLookupByName(libvirtConnection.NativePtr, vmName);
       AnsiConsole.MarkupLine($"[yellow]🔄 Restart VM: {vmName}[/]");

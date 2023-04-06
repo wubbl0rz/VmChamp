@@ -28,7 +28,7 @@ public class RemoveCommand : Command
 
     this.SetHandler((vmName) =>
     {
-      using var libvirtConnection = LibvirtConnection.Create("qemu:///session");
+      using var libvirtConnection = LibvirtConnection.CreateForSession();
       
       var vmId = Interop.virDomainLookupByName(libvirtConnection.NativePtr, vmName);
       var vmDir = Path.Combine(_appConfig.DataDir, vmName);

@@ -3,6 +3,8 @@ using System.CommandLine.Builder;
 using System.CommandLine.Completions;
 using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
+using System.Net;
+using System.Net.NetworkInformation;
 using Spectre.Console;
 using VmChamp;
 

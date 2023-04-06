@@ -19,7 +19,7 @@ public class ListCommand : Command
     
     this.SetHandler(() =>
     {
-      using var libvirtConnection = LibvirtConnection.Create("qemu:///session");
+      using var libvirtConnection = LibvirtConnection.CreateForSession();
       
       var table = new Table();
       table.AddColumn("VM");

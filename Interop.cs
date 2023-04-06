@@ -102,6 +102,21 @@ public static unsafe class Interop
     EntryPoint = "virDomainReset")]
   public static extern int virDomainReset(nint domain, uint flags = 0);
 
+  [DllImport("libvirt.so.0",
+    CallingConvention = CallingConvention.Cdecl,
+    EntryPoint = "virNetworkCreateXML")]
+  public static extern nint virNetworkCreateXML(nint conn, string xml);
+
+  [DllImport("libvirt.so.0",
+    CallingConvention = CallingConvention.Cdecl,
+    EntryPoint = "virNetworkLookupByName")]
+  public static extern nint virNetworkLookupByName(nint conn, string name);
+
+  [DllImport("libvirt.so.0",
+    CallingConvention = CallingConvention.Cdecl,
+    EntryPoint = "virNetworkDestroy")]
+  public static extern int virNetworkDestroy(nint network);
+
   public static string? GetFirstIpById(nint id)
   {
     VirDomainInterface** ifaces = null;
@@ -130,6 +145,19 @@ public static unsafe class Interop
       Directory.Delete(vmDir, true);
     }
   }
+
+  public static string DefaultNetworkDefiniton = """
+    <network>
+      <name>default</name>
+      <bridge name='virbr0'/>
+      <forward/>
+      <ip address='192.168.122.1' netmask='255.255.255.0'>
+        <dhcp>
+          <range start='192.168.122.128' end='192.168.122.254'/>
+        </dhcp>
+      </ip>
+    </network>
+    """;
 }
 
 public class LibvirtConnection : IDisposable
@@ -143,7 +171,17 @@ public class LibvirtConnection : IDisposable
     _ptr = ptr;
   }
 
-  public static LibvirtConnection Create(string target)
+  public static LibvirtConnection CreateForSession()
+  {
+    return Create("qemu:///session");
+  }
+
+  public static LibvirtConnection CreateForSystem()
+  {
+    return Create("qemu:///system");
+  }
+
+  private static LibvirtConnection Create(string target)
   {
     var ptr = Interop.virConnectOpen(target);
 

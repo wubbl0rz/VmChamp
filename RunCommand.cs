@@ -103,6 +103,9 @@ public class RunCommand : Command
         localImagePath,
         customCmd) =>
       {
+        if (!Helper.CheckDefaultNetwork())
+          return;
+
         var distro = localImagePath is null ? 
           this.GetDistro(os) : 
           DistroInfo.CreateLocal(new FileInfo(localImagePath));
@@ -125,7 +128,7 @@ public class RunCommand : Command
 
         if (Directory.Exists(vmDir))
         {
-          AnsiConsole.MarkupLine($"[red]VM: {vmName} already exists. Do you want to delete and recreate it now?[/]");
+          AnsiConsole.MarkupLine($"[yellow]VM: {vmName} already exists. Do you want to delete and recreate it now?[/]");
 
           if (AnsiConsole.Ask<string>("Continue? (y/N)", "N").ToLower() != "y")
           {
@@ -168,11 +171,17 @@ public class RunCommand : Command
     double memSize,
     int cpuCount)
   {
-    using var libvirtConnection = LibvirtConnection.Create("qemu:///session");
+    using var libvirtConnection = LibvirtConnection.CreateForSession();
 
     var xml = this.GenXml(vmName, osImage.FullName, initImage.FullName, memSize, cpuCount);
 
     var vmId = Interop.virDomainCreateXML(libvirtConnection.NativePtr, xml, 0);
+
+    if (vmId == nint.Zero)
+    {
+      AnsiConsole.MarkupLine($"[red]Error while creating: {vmName}[/]");
+      return;
+    }
     
     string? vmIp = null;
 
@@ -187,7 +196,7 @@ public class RunCommand : Command
       {
         ctx.AddTask($"Waiting for network...");
 
-        var src = new CancellationTokenSource(TimeSpan.FromSeconds(45));
+        var src = new CancellationTokenSource(TimeSpan.FromSeconds(90));
       
         do
         {
@@ -198,7 +207,7 @@ public class RunCommand : Command
     
     if (vmIp == null)
     {
-      AnsiConsole.WriteLine("🤔 No network found. Check if virbr0 or default network is up.");
+      AnsiConsole.WriteLine("🤔 No network found. Maybe your VM takes too long to boot or network is not ready?");
       return;
     }
 
@@ -211,7 +220,7 @@ public class RunCommand : Command
 
   private void RemoveVm(string vmName, string vmDir)
   {
-    using var libvirtConnection = LibvirtConnection.Create("qemu:///session");
+    using var libvirtConnection = LibvirtConnection.CreateForSession();
 
     var vmId = Interop.virDomainLookupByName(libvirtConnection.NativePtr, vmName);
 
