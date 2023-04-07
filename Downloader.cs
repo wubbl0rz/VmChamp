@@ -22,7 +22,7 @@ public class Downloader
       return targetFile;
     }
 
-    var uri = new Uri($"{distroInfo.Url}/{distroInfo.ImageName}");
+    var uri = new Uri(new Uri(distroInfo.Url), distroInfo.ImageName);
 
     AnsiConsole.WriteLine($"Download: {uri}");
 

@@ -15,4 +15,5 @@ FROM scratch as output
 COPY --from=build /App/build/VmChamp /VmChamp
 
 FROM build as release
+COPY --from=build /App/build/VmChamp /VmChamp
 
