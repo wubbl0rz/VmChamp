@@ -48,6 +48,8 @@ VmChamp run mytestvm
 
 <img src="https://user-images.githubusercontent.com/30373916/227714582-0338020d-6d84-4bd8-b3cd-a753cc19e3fa.png" width="700px">
 
+![kekl](https://user-images.githubusercontent.com/30373916/230978495-2c99b9a3-7ebe-468e-899b-19281bcd433b.gif)
+
 For shell completion put this in your ~.zshrc:
 
 ```
@@ -55,8 +57,10 @@ source <(VmChamp --completion zsh)
 ```
 
 ```
+Description:
+
 Usage:
-  VmChamp [command] [options]
+  vmchamp [command] [options]
 
 Options:
   --completion <completion>  generate shell completion. (zsh or bash)
@@ -64,13 +68,13 @@ Options:
   -?, -h, --help             Show help and usage information
 
 Commands:
-  run, start <name>              start a new VM [default: testvm]
-  clean                          delete all vms and images
-  remove, rm <name>              removes a vm [default: testvm]
-  reboot, reset, restart <name>  force restarts a vm [default: testvm]
-  ssh <name>                     connect to vm via ssh [default: testvm]
-  list, ls, ps                   list all existing vms
-  images, os                     get a list of all available os images
+  run, start <name>                      start a new VM [default: testvm]
+  clean                                  delete all vms and images
+  remove, rm <debiantestvm>              removes a vm [default: testvm]
+  reboot, reset, restart <debiantestvm>  force restarts a vm [default: testvm]
+  ssh <debiantestvm>                     connect to vm via ssh [default: testvm]
+  list, ls, ps                           list all existing vms
+  images, os                             get a list of all available os images
 ```
 
 ## 🏗️ Build
