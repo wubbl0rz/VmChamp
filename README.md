@@ -50,6 +50,13 @@ VmChamp run mytestvm
 
 ![kekl](https://user-images.githubusercontent.com/30373916/230978495-2c99b9a3-7ebe-468e-899b-19281bcd433b.gif)
 
+
+
+https://user-images.githubusercontent.com/30373916/230979933-1331442a-89de-4ff7-92c3-8a31b4f7cf2d.mp4
+
+
+
+
 For shell completion put this in your ~.zshrc:
 
 ```
