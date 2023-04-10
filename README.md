@@ -48,8 +48,6 @@ VmChamp run mytestvm
 
 <img src="https://user-images.githubusercontent.com/30373916/227714582-0338020d-6d84-4bd8-b3cd-a753cc19e3fa.png" width="700px">
 
-![kekl](https://user-images.githubusercontent.com/30373916/230978495-2c99b9a3-7ebe-468e-899b-19281bcd433b.gif)
-
 For shell completion put this in your ~.zshrc:
 
 ```
