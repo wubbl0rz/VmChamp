@@ -60,7 +60,16 @@ jobs:
         git config --global user.name "${{ github.repository_owner }}"
 
         cd vmchamp-bin
+
+        REL=1
+
+        if grep "${{ github.ref_name }}" PKGBUILD; then
+          REL=$(( $(grep pkgrel PKGBUILD | cut -d = -f 2) + 1 ))
+        fi
+
+        sed -i s/pkgrel=.*/pkgrel=$REL/g PKGBUILD
         sed -i s/pkgver=.*/pkgver=${{ github.ref_name }}/g PKGBUILD
+
         useradd build
         chown -R build:build /tmp/vmchamp-bin
         sudo -u build makepkg --force --printsrcinfo > .SRCINFO
