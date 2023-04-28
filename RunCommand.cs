@@ -242,7 +242,7 @@ public class RunCommand : Command
         <memory unit="B">{memSizeInBytes}</memory>
         <vcpu placement="static">{cpuCount}</vcpu>
         <os>
-          <type arch="x86_64" machine="pc-q35-7.2">hvm</type>
+          <type arch="x86_64" machine="q35">hvm</type>
           <boot dev="hd"/>
         </os>
         <features>
@@ -296,7 +296,7 @@ public class RunCommand : Command
           <redirdev bus="usb" type="spicevmc">
             <address type="usb" bus="0" port="3"/>
           </redirdev>
-          <watchdog model="itco" action="reset"/>
+          <watchdog model="i6300esb" action="reset"/>
           <memballoon model="virtio">
             <address type="pci" domain="0x0000" bus="0x06" slot="0x00" function="0x0"/>
           </memballoon>

@@ -9,6 +9,8 @@ public class CleanCommand : Command
   public CleanCommand(AppConfig appConfig) : base("clean", "delete all vms and images")
   {
     _appConfig = appConfig;
+    
+    this.AddAlias("purge");
 
     var allVmDirectories = Directory.GetDirectories(appConfig.DataDir);
     

@@ -5,8 +5,15 @@ using System.CommandLine.Invocation;
 using System.CommandLine.Parsing;
 using System.Net;
 using System.Net.NetworkInformation;
+using System.Runtime.InteropServices;
 using Spectre.Console;
 using VmChamp;
+
+if (!Interop.IsLibvirtInstalled())
+{
+  AnsiConsole.MarkupLine("[red]Libvirt not found.[/]");
+  return 1;
+}
 
 var appConfig = new AppConfig();
 Directory.CreateDirectory(appConfig.CacheDir);

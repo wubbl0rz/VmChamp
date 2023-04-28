@@ -41,9 +41,9 @@ public class Helper
     if (defaultBridge == null)
     {
       AnsiConsole.MarkupLine("[red]Default network bridge: virbr0 not found. " +
-                             "Normally libvirt should have created a bridge after installation.[/]");
+                             "Some distributions do not setup a bridge automatically.[/]");
 
-      if (AnsiConsole.Ask<string>("Do you want to create one now? (y/N)", "N").ToLower() != "y")
+      if (AnsiConsole.Ask<string>("Do you want to create one now and allow VMs to use it? (y/N)", "N").ToLower() != "y")
       {
         return false;
       }
@@ -52,6 +52,12 @@ public class Helper
       AnsiConsole.WriteLine(Interop.DefaultNetworkDefiniton);
 
       script = $"""
+        if ! test -f /etc/qemu/bridge.conf; then
+          mkdir -p /etc/qemu &> /dev/null
+          echo \"allow virbr0\" > /etc/qemu/bridge.conf
+          chmod u+s /usr/lib/qemu/qemu-bridge-helper
+        fi
+
         if ! virsh --connect qemu:///system net-start default &> /dev/null; then
           virsh net-undefine default &> /dev/null
           virsh --connect qemu:///system net-define <(echo \"{Interop.DefaultNetworkDefiniton}\") &> /dev/null

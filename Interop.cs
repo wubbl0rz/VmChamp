@@ -130,7 +130,14 @@ public static unsafe class Interop
     var ip = Marshal.PtrToStringUTF8((nint)virDomainIpAddress.addr);
     return ip;
   }
-  
+
+  public static bool IsLibvirtInstalled()
+  {
+    NativeLibrary.TryLoad("libvirt.so.0", out var handle);
+    
+    return handle != IntPtr.Zero;
+  }
+
   public static void DestroyVm(nint vmId, string vmName, string vmDir)
   {
     AnsiConsole.MarkupLine($"[yellow]💀 Removing VM: {vmName}[/]");
