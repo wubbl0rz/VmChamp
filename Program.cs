@@ -9,12 +9,6 @@ using System.Runtime.InteropServices;
 using Spectre.Console;
 using VmChamp;
 
-if (!Interop.IsLibvirtInstalled())
-{
-  AnsiConsole.MarkupLine("[red]Libvirt not found.[/]");
-  return 1;
-}
-
 var appConfig = new AppConfig();
 Directory.CreateDirectory(appConfig.CacheDir);
 Directory.CreateDirectory(appConfig.DataDir);
@@ -82,6 +76,12 @@ if (args.Length > 1 && args[0] == "[complete]")
   }
 
   return 0;
+}
+
+if (!Interop.IsLibvirtInstalled())
+{
+  AnsiConsole.MarkupLine("[red]Libvirt not found.[/]");
+  return 1;
 }
 
 return await app.InvokeAsync(args);

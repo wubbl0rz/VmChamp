@@ -250,7 +250,7 @@ public class RunCommand : Command
           <apic/>
           <vmport state="off"/>
         </features>
-        <cpu mode="host-model" check="partial"/>
+        <cpu mode="host-passthrough" check="partial"/>
         <on_poweroff>destroy</on_poweroff>
         <on_reboot>restart</on_reboot>
         <on_crash>destroy</on_crash>

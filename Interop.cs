@@ -153,18 +153,21 @@ public static unsafe class Interop
     }
   }
 
-  public static string DefaultNetworkDefiniton = """
+  public static string GenVirBridgeXml(string name, string ip, string mask, string dhcpStart, string dhcpEnd)
+  {
+    return $"""
     <network>
       <name>default</name>
-      <bridge name='virbr0'/>
+      <bridge name='{name}'/>
       <forward/>
-      <ip address='192.168.122.1' netmask='255.255.255.0'>
+      <ip address='{ip}' netmask='{mask}'>
         <dhcp>
-          <range start='192.168.122.128' end='192.168.122.254'/>
+          <range start='{dhcpStart}' end='{dhcpEnd}'/>
         </dhcp>
       </ip>
     </network>
     """;
+  }
 }
 
 public class LibvirtConnection : IDisposable
