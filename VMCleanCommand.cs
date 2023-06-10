@@ -11,6 +11,7 @@ public class VMCleanCommand : Command
         _appConfig = appConfig;
     
         this.AddAlias("vpurge");
+        this.AddAlias("vmc");
 
         var allVmDirectories = Directory.GetDirectories(appConfig.DataDir);
     
