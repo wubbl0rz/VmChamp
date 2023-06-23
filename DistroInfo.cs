@@ -172,8 +172,8 @@ public class DistroInfo
       ImageName = localImage.Name,
       Url = "file://" + localImageDirectory?.FullName,
       Aliases = Array.Empty<string>(),
-      ChecksumFile = "",
-      ChecksumType = ""
+      ChecksumFile = "/dev/null",
+      ChecksumType = "none"
     };
   }
 
