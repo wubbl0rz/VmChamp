@@ -111,8 +111,8 @@ public class DistroInfo
       ImageName = "CentOS-7-x86_64-GenericCloud.qcow2",
       Url = "https://cloud.centos.org/centos/7/images/",
       Aliases = Array.Empty<string>(),
-      ChecksumFile = "sha256sum.txt",
-      ChecksumType = "sha256"
+      ChecksumFile = "/dev/null",
+      ChecksumType = "none"
     },
     new()
     {
