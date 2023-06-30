@@ -10,27 +10,27 @@ public class ChecksumHelper
         return BitConverter.ToString(hash).Replace("-", "");
     }
 
-    public bool CompareHash(byte[] firstHash, byte[] secondHash)
+    private bool CompareHash(byte[] firstHash, byte[] secondHash)
     {
         if (ConvertHashToString(firstHash) == ConvertHashToString(secondHash)) return true;
         else return false;
     }
     
-    public string GetSHA1(string inputFile)
+    private string GetSHA1(string inputFile)
     {
         using (var sha1 = SHA1.Create())
         using (var stream = File.OpenRead(inputFile))
             return ConvertHashToString(sha1.ComputeHash(stream));
     }
 
-    public string GetSHA256(string inputFile)
+    private string GetSHA256(string inputFile)
     {
         using (var sha256 = SHA256.Create())
         using (var stream = File.OpenRead(inputFile))
             return ConvertHashToString(sha256.ComputeHash(stream));
     }
 
-    public string GetSHA512(string inputFile)
+    private string GetSHA512(string inputFile)
     {
         using (var sha512 = SHA512.Create())
         using (var stream = File.OpenRead(inputFile))
@@ -39,7 +39,7 @@ public class ChecksumHelper
             
     }
     
-    public bool ReadChecksum(string checksumInputFile, string hash)
+    private bool ReadChecksum(string checksumInputFile, string hash)
     {
         ;
         if (!File.Exists(checksumInputFile))
