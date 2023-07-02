@@ -8,8 +8,8 @@ public class DistroInfo
     {
       Name = "Debian12",
       Family = "Debian",
-      ImageName = "debian-12-genericcloud-amd64-daily.qcow2",
-      Url = "https://cloud.debian.org/images/cloud/bookworm/daily/latest/",
+      ImageName = "debian-12-genericcloud-amd64.qcow2",
+      Url = "https://cloud.debian.org/images/cloud/bookworm/latest/",
       Aliases = new[] { "Bookworm" },
       ChecksumFile = "SHA512SUMS",
       ChecksumType = "sha512"
